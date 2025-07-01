@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro de Asistencia</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: white;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            color: #333;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        #email {
+            padding: 15px;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 350px;
+            margin: 15px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        #email:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        #submit {
+            padding: 15px 30px;
+            font-size: 1rem;
+            margin: 15px 0;
+            cursor: pointer;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: transform 0.2s ease;
+            font-weight: 600;
+        }
+
+        #submit:hover {
+            transform: translateY(-2px);
+        }
+
+        #submit:active {
+            transform: translateY(0);
+        }
+
+        #response {
+            font-size: 1.1rem;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 20px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        #reader {
+            border: 3px solid #667eea;
+            border-radius: 12px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            margin: 25px auto;
+            max-width: 400px;
+        }
+
+        #reader video {
+            border: none;
+            margin: 0;
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        #camera-status {
+            margin: 15px 0;
+            padding: 10px;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .status-loading {
+            color: #007bff;
+        }
+
+        .status-active {
+            color: #28a745;
+        }
+
+        .status-error {
+            color: #dc3545;
+        }
+
+        .status-success {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .divider {
+            margin: 30px 0;
+            border-top: 2px solid #eee;
+            position: relative;
+        }
+
+        .divider::after {
+            content: 'O';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 0 15px;
+            color: #999;
+            font-weight: bold;
+        }
+
+        .camera-permissions {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📋 Registro de Asistencia</h1>
+        <p class="subtitle">Escanea el código QR del participante o escribe el correo electrónico</p>
+
+        <!-- QR Scanner Section -->
+        <div id="camera-permissions" class="camera-permissions" style="display: none;">
+            🔒 Por favor, permite el acceso a la cámara para escanear códigos QR
+        </div>
+        
+        <div id="reader"></div>
+        <div id="camera-status" class="status-loading">🔍 Iniciando escáner...</div>
+
+        <div class="divider"></div>
+
+        <!-- Manual Input Section -->
+        <input type="email" id="email" placeholder="correo@ejemplo.com" autocomplete="off" />
+        <br />
+        <button id="submit" onclick="checkIn()">📝 Registrar Asistencia</button>
+
+        <div id="response"></div>
+    </div>
+
+    <!-- CDN library for GitHub Pages compatibility -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+    <script>
+        const endpoint = "https://script.google.com/macros/s/AKfycbxXXuN5DrZ5sPQMVvFHjOULwIUk62McYtK-0-FyqKYXqGJhuXBoDZEGIwaRQaC7S6WE6Q/exec";
+        let html5QrCode = null;
+        let isScanning = false;
+
+        function checkIn() {
+            const email = document.getElementById("email").value.trim();
+            const responseEl = document.getElementById("response");
+
+            if (!email) {
+                responseEl.textContent = "❌ Debes ingresar un correo.";
+                responseEl.className = "error";
+                return;
+            }
+
+            responseEl.textContent = "⏳ Registrando asistencia...";
+            responseEl.className = "";
+
+            fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `email=${encodeURIComponent(email)}`
+            })
+                .then(res => res.text())
+                .then(msg => {
+                    responseEl.textContent = msg;
+                    responseEl.className = msg.includes("❌") ? "error" : "success";
+                    
+                    // Clear email field after successful registration
+                    if (!msg.includes("❌")) {
+                        setTimeout(() => {
+                            document.getElementById("email").value = "";
+                        }, 2000);
+                    }
+                })
+                .catch(() => {
+                    responseEl.textContent = "❌ Error en la conexión.";
+                    responseEl.className = "error";
+                });
+        }
+
+        // Auto-check-in after QR scan
+        function onScanSuccess(decodedText, decodedResult) {
+            if (isScanning) return; // Prevent multiple rapid scans
+            
+            isScanning = true;
+            document.getElementById("email").value = decodedText;
+            document.getElementById("camera-status").textContent = "✅ QR escaneado correctamente";
+            document.getElementById("camera-status").className = "status-success";
+            
+            checkIn();
+            
+            // Allow scanning again after 3 seconds
+            setTimeout(() => {
+                isScanning = false;
+                document.getElementById("camera-status").textContent = "📷 Cámara activa - Enfoca el código QR";
+                document.getElementById("camera-status").className = "status-active";
+            }, 3000);
+        }
+
+        function onScanFailure(error) {
+            // Handle scan failure silently - this is normal during scanning
+        }
+
+        // Initialize QR scanner
+        function initQRScanner() {
+            // Wait for library to be available
+            if (typeof Html5Qrcode === 'undefined') {
+                setTimeout(initQRScanner, 500);
+                return;
+            }
+
+            const statusEl = document.getElementById("camera-status");
+            const permissionsEl = document.getElementById("camera-permissions");
+            
+            statusEl.textContent = "🔍 Iniciando cámara...";
+            statusEl.className = "status-loading";
+
+            html5QrCode = new Html5Qrcode("reader");
+            
+            // Get cameras and start scanning
+            Html5Qrcode.getCameras().then(devices => {
+                if (!devices || devices.length === 0) {
+                    statusEl.textContent = "❌ No se encontraron cámaras";
+                    statusEl.className = "status-error";
+                    return;
+                }
+
+                // Select the best camera
+                let selectedCamera = devices.find(device => 
+                    device.label.toLowerCase().includes('back') ||
+                    device.label.toLowerCase().includes('rear')
+                ) || devices[0];
+
+                // Start scanning
+                html5QrCode.start(
+                    selectedCamera.id,
+                    {
+                        fps: 10,
+                        qrbox: { width: 280, height: 280 },
+                        aspectRatio: 1.0
+                    },
+                    onScanSuccess,
+                    onScanFailure
+                ).then(() => {
+                    statusEl.textContent = "📷 Cámara activa - Enfoca el código QR";
+                    statusEl.className = "status-active";
+                    permissionsEl.style.display = "none";
+                }).catch(err => {
+                    if (err.name === 'NotAllowedError') {
+                        permissionsEl.style.display = "block";
+                        statusEl.textContent = "❌ Acceso a cámara denegado";
+                    } else {
+                        statusEl.textContent = "❌ Error al iniciar la cámara";
+                    }
+                    statusEl.className = "status-error";
+                });
+
+            }).catch(err => {
+                statusEl.textContent = "❌ No se pudo acceder a las cámaras";
+                statusEl.className = "status-error";
+            });
+        }
+
+        // Start the QR scanner when the page loads
+        window.addEventListener('load', function() {
+            // Give time for the library to load
+            setTimeout(initQRScanner, 1000);
+        });
+
+        // Handle Enter key in email input
+        document.getElementById("email").addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkIn();
+            }
+        });
+    </script>
+
+</body>
+
+</html>
