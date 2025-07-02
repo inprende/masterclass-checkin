@@ -112,6 +112,23 @@
             border-radius: 8px;
         }
 
+        #qr-reader {
+            margin: 25px auto;
+            max-width: 400px;
+        }
+
+        #qr-reader video {
+            border-radius: 8px;
+            width: 100% !important;
+        }
+
+        #qr-reader__dashboard {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
         #camera-status {
             margin: 15px 0;
             padding: 10px;
@@ -174,8 +191,7 @@
         <div id="camera-permissions" class="camera-permissions" style="display: none;">
             🔒 Por favor, permite el acceso a la cámara para escanear códigos QR
         </div>
-        
-        <div id="reader"></div>
+        <div id="qr-reader" style="width: 100%; max-width: 600px; margin: 0 auto;"></div>
         <div id="camera-status" class="status-loading">🔍 Iniciando escáner...</div>
 
         <div class="divider"></div>
@@ -189,10 +205,10 @@
     </div>
 
     <!-- CDN library for GitHub Pages compatibility -->
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
         const endpoint = "https://script.google.com/macros/s/AKfycbxXXuN5DrZ5sPQMVvFHjOULwIUk62McYtK-0-FyqKYXqGJhuXBoDZEGIwaRQaC7S6WE6Q/exec";
-        let html5QrCode = null;
+        let html5QrCode;
         let isScanning = false;
 
         function checkIn() {
@@ -217,7 +233,7 @@
                 .then(msg => {
                     responseEl.textContent = msg;
                     responseEl.className = msg.includes("❌") ? "error" : "success";
-                    
+
                     // Clear email field after successful registration
                     if (!msg.includes("❌")) {
                         setTimeout(() => {
@@ -231,99 +247,134 @@
                 });
         }
 
-        // Auto-check-in after QR scan
-        function onScanSuccess(decodedText, decodedResult) {
-            if (isScanning) return; // Prevent multiple rapid scans
+        // QR Code success callback
+        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+            // Prevent multiple rapid scans
+            if (isScanning) return;
             
             isScanning = true;
-            document.getElementById("email").value = decodedText;
-            document.getElementById("camera-status").textContent = "✅ QR escaneado correctamente";
+            console.log(`Code matched = ${decodedText}`, decodedResult);
+            
+            // Place the QR result in the email input field
+            const emailInput = document.getElementById("email");
+            emailInput.value = decodedText;
+            
+            // Add visual feedback that QR was scanned
+            emailInput.style.borderColor = "#28a745";
+            emailInput.style.backgroundColor = "#d4edda";
+            
+            document.getElementById("camera-status").textContent = "✅ QR escaneado correctamente - Enviando...";
             document.getElementById("camera-status").className = "status-success";
             
-            checkIn();
+            // Auto-submit the form with the scanned email
+            setTimeout(() => {
+                checkIn();
+            }, 500); // Small delay to show the visual feedback
             
-            // Allow scanning again after 3 seconds
+            // Reset visual feedback and allow scanning again after 4 seconds
             setTimeout(() => {
                 isScanning = false;
+                emailInput.style.borderColor = "#ddd";
+                emailInput.style.backgroundColor = "white";
                 document.getElementById("camera-status").textContent = "📷 Cámara activa - Enfoca el código QR";
                 document.getElementById("camera-status").className = "status-active";
-            }, 3000);
-        }
+            }, 4000);
+        };
 
-        function onScanFailure(error) {
+        // QR Code error callback
+        const qrCodeErrorCallback = (errorMessage) => {
             // Handle scan failure silently - this is normal during scanning
-        }
+            // console.warn(`Code scan error = ${errorMessage}`);
+        };
 
-        // Initialize QR scanner
-        function initQRScanner() {
-            // Wait for library to be available
-            if (typeof Html5Qrcode === 'undefined') {
-                setTimeout(initQRScanner, 500);
-                return;
-            }
-
-            const statusEl = document.getElementById("camera-status");
-            const permissionsEl = document.getElementById("camera-permissions");
-            
-            statusEl.textContent = "🔍 Iniciando cámara...";
-            statusEl.className = "status-loading";
-
-            html5QrCode = new Html5Qrcode("reader");
-            
-            // Get cameras and start scanning
-            Html5Qrcode.getCameras().then(devices => {
-                if (!devices || devices.length === 0) {
-                    statusEl.textContent = "❌ No se encontraron cámaras";
-                    statusEl.className = "status-error";
-                    return;
-                }
-
-                // Select the best camera
-                let selectedCamera = devices.find(device => 
-                    device.label.toLowerCase().includes('back') ||
-                    device.label.toLowerCase().includes('rear')
-                ) || devices[0];
-
-                // Start scanning
-                html5QrCode.start(
-                    selectedCamera.id,
-                    {
-                        fps: 10,
-                        qrbox: { width: 280, height: 280 },
-                        aspectRatio: 1.0
-                    },
-                    onScanSuccess,
-                    onScanFailure
-                ).then(() => {
-                    statusEl.textContent = "📷 Cámara activa - Enfoca el código QR";
-                    statusEl.className = "status-active";
-                    permissionsEl.style.display = "none";
-                }).catch(err => {
-                    if (err.name === 'NotAllowedError') {
-                        permissionsEl.style.display = "block";
-                        statusEl.textContent = "❌ Acceso a cámara denegado";
-                    } else {
-                        statusEl.textContent = "❌ Error al iniciar la cámara";
-                    }
-                    statusEl.className = "status-error";
-                });
-
-            }).catch(err => {
-                statusEl.textContent = "❌ No se pudo acceder a las cámaras";
-                statusEl.className = "status-error";
-            });
-        }
-
-        // Start the QR scanner when the page loads
+        // Initialize the scanner when page loads
         window.addEventListener('load', function() {
-            // Give time for the library to load
-            setTimeout(initQRScanner, 1000);
+            setTimeout(() => {
+                try {
+                    html5QrCode = new Html5Qrcode("qr-reader");
+                    
+                    document.getElementById("camera-status").textContent = "🔍 Iniciando cámara...";
+                    document.getElementById("camera-status").className = "status-loading";
+
+                    const config = { 
+                        fps: 10, 
+                        qrbox: { width: 250, height: 250 },
+                        aspectRatio: 1.0
+                    };
+
+                    // Try to prefer back camera first (better for QR scanning)
+                    html5QrCode.start(
+                        { facingMode: "environment" }, // Back camera
+                        config,
+                        qrCodeSuccessCallback,
+                        qrCodeErrorCallback
+                    ).then(() => {
+                        document.getElementById("camera-status").textContent = "📷 Cámara activa - Enfoca el código QR";
+                        document.getElementById("camera-status").className = "status-active";
+                        console.log("QR Scanner iniciado con cámara trasera");
+                    }).catch(err => {
+                        console.warn("No se pudo usar cámara trasera, intentando frontal...", err);
+                        
+                        // Fallback to front camera
+                        html5QrCode.start(
+                            { facingMode: "user" }, // Front camera
+                            config,
+                            qrCodeSuccessCallback,
+                            qrCodeErrorCallback
+                        ).then(() => {
+                            document.getElementById("camera-status").textContent = "📷 Cámara activa - Enfoca el código QR";
+                            document.getElementById("camera-status").className = "status-active";
+                            console.log("QR Scanner iniciado con cámara frontal");
+                        }).catch(err2 => {
+                            console.error("Error con ambas cámaras:", err2);
+                            
+                            // Final fallback - let browser choose
+                            html5QrCode.start(
+                                { video: true }, // Any available camera
+                                config,
+                                qrCodeSuccessCallback,
+                                qrCodeErrorCallback
+                            ).then(() => {
+                                document.getElementById("camera-status").textContent = "📷 Cámara activa - Enfoca el código QR";
+                                document.getElementById("camera-status").className = "status-active";
+                                console.log("QR Scanner iniciado con cámara por defecto");
+                            }).catch(err3 => {
+                                console.error("Error al inicializar cualquier cámara:", err3);
+                                
+                                if (err3.name === 'NotAllowedError') {
+                                    document.getElementById("camera-permissions").style.display = "block";
+                                    document.getElementById("camera-status").textContent = "❌ Acceso a cámara denegado";
+                                } else if (err3.name === 'NotFoundError') {
+                                    document.getElementById("camera-status").textContent = "❌ No se encontró ninguna cámara";
+                                } else {
+                                    document.getElementById("camera-status").textContent = `❌ Error: ${err3.message}`;
+                                }
+                                document.getElementById("camera-status").className = "status-error";
+                            });
+                        });
+                    });
+
+                } catch (error) {
+                    console.error("Error initializing Html5Qrcode:", error);
+                    document.getElementById("camera-status").textContent = "❌ Error al inicializar el escáner";
+                    document.getElementById("camera-status").className = "status-error";
+                }
+            }, 1000);
         });
 
         // Handle Enter key in email input
-        document.getElementById("email").addEventListener('keypress', function(e) {
+        document.getElementById("email").addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 checkIn();
+            }
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().catch(err => {
+                    console.error("Error stopping scanner:", err);
+                });
             }
         });
     </script>
