@@ -1,4 +1,4 @@
-const endpoint = "https://script.google.com/a/macros/inprende.com/s/AKfycbwF3MpgOWUqR6LH9Snz8XYsw3kucOMSKajIkQKZt8IAoTVg2THsEFtowanRuVMBwC4/exec";
+const endpoint = "https://script.google.com/macros/s/AKfycbzCYNUBZpMVNizlpyHCZyLJoltYkch3gNcCHPePdrIC_CigCKIfO94CuyE76h849SbKIA/exec";
 let html5QrCode;
 let isScanning = false;
 
