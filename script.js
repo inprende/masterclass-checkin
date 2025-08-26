@@ -1,4 +1,7 @@
-const endpoint = "https://script.google.com/macros/s/AKfycbyz8k8yO26tSN7c3DX4eSroafsUap0WTLhtHsOt94Kyv3a1gzWD5_WBKhUF4RIogzc4/exec";
+// Liderazgo Endpoint
+// const endpoint = "https://script.google.com/macros/s/AKfycbyz8k8yO26tSN7c3DX4eSroafsUap0WTLhtHsOt94Kyv3a1gzWD5_WBKhUF4RIogzc4/exec";
+// Emociones Endpoint
+const endpoint = "https://script.google.com/macros/s/AKfycbx5e5dBSC5I2DPjB04QI4NHx1ovngXHO54Adn2_Iq11gqztoLSqMzyU1-j6RNpRFrDJ/exec";
 let html5QrCode;
 let isScanning = false;
 
