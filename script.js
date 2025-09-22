@@ -3,7 +3,7 @@
 // Emociones Endpoint
 // const endpoint = "https://script.google.com/macros/s/AKfycbx5e5dBSC5I2DPjB04QI4NHx1ovngXHO54Adn2_Iq11gqztoLSqMzyU1-j6RNpRFrDJ/exec";
 // INtraemprendimiento Endpoint
-const endpoint="https://script.google.com/macros/s/AKfycbymvP-QaweHu7gwdB357J2O276xABNi9QAQ6oRjzvbSnAhHAn38ufAZo4Hr2uwemANkaw/exec"
+const endpoint="https://script.google.com/macros/s/AKfycbwxEXT1yDi0lXYIZTlAQanKjiUBxYDGj655-soZFZKv9G9Luug4ZxJ046aBk71yWJqerw/exec"
 
 let html5QrCode;
 let isScanning = false;
@@ -162,7 +162,7 @@ const qrCodeErrorCallback = (errorMessage) => {
 };
 
 // Initialize the scanner when page loads
-window.addEventListener('load', function () {
+window.addEventListener('load', () => {
     setTimeout(() => {
         try {
             html5QrCode = new Html5Qrcode("qr-reader");
@@ -254,15 +254,15 @@ window.addEventListener('load', function () {
 });
 
 // Handle Enter key in email input
-document.getElementById("email").addEventListener('keypress', function (e) {
+document.getElementById("email").addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         checkIn();
     }
 });
 
 // Cleanup on page unload
-window.addEventListener('beforeunload', function () {
-    if (html5QrCode && html5QrCode.isScanning) {
+window.addEventListener('beforeunload', () => {
+    if (html5QrCode?.isScanning) {
         html5QrCode.stop().catch(err => {
             console.error("Error stopping scanner:", err);
         });
