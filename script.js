@@ -12,6 +12,8 @@ function checkIn() {
     const email = document.getElementById("email").value.trim();
     const responseEl = document.getElementById("manual-response");
     const qrResponseEl = document.getElementById("qr-response");
+    const submitButton = document.getElementById("submitButton");
+    submitButton.disabled = true;
 
     // Clear all previous responses
     responseEl.textContent = "";
@@ -22,6 +24,7 @@ function checkIn() {
     if (!email) {
         responseEl.textContent = "❌ Debes ingresar un correo.";
         responseEl.className = "text-lg my-5 p-4 rounded-lg min-h-[20px] bg-error-bg text-error-text border border-error-border";
+        submitButton.disabled = false;
         return;
     }
 
@@ -56,6 +59,9 @@ function checkIn() {
         .catch(() => {
             responseEl.textContent = "❌ Error en la conexión.";
             responseEl.className = "text-lg my-5 p-4 rounded-lg min-h-[20px] bg-error-bg text-error-text border border-error-border";
+        })
+        .finally(() => {
+            submitButton.disabled = false;
         });
 }
 
@@ -63,6 +69,8 @@ function checkIn() {
 function qrCheckIn(email) {
     const responseEl = document.getElementById("qr-response");
     const manualResponseEl = document.getElementById("manual-response");
+    const submitButton = document.getElementById("submitButton");
+    submitButton.disabled = true;
 
     // Clear all previous responses
     responseEl.textContent = "";
@@ -95,7 +103,8 @@ function qrCheckIn(email) {
             setTimeout(() => {
                 responseEl.textContent = "";
                 responseEl.className = "";
-            }, 5000);
+                submitButton.disabled = false;
+            }, 2000);
         })
         .catch(() => {
             responseEl.textContent = "📱 ❌ Error en la conexión del QR.";
@@ -115,6 +124,7 @@ const qrCodeSuccessCallback = (decodedText, decodedResult) => {
     if (isScanning) return;
 
     isScanning = true;
+
     console.log(`Code matched = ${decodedText}`, decodedResult);
 
     // Clear all previous responses at start of QR scan
@@ -169,7 +179,7 @@ window.addEventListener('load', () => {
             
             // Add Tailwind classes to QR reader container
             const qrReaderEl = document.getElementById("qr-reader");
-            qrReaderEl.className = "w-full max-w-sm mx-auto my-6";
+            qrReaderEl.className = "w-full max-w-sm mx-auto";
             
             document.getElementById("camera-status").textContent = "🔍 Iniciando cámara...";
             document.getElementById("camera-status").className = "my-4 p-3 font-medium text-base text-blue-500";

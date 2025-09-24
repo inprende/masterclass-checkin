@@ -35,9 +35,11 @@
         .bg-gradient-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
+
         .bg-gradient-button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
+
         /* Custom divider with O */
         /* .divider-custom::after {
             content: 'O';
@@ -53,37 +55,40 @@
     </style>
 </head>
 
-<body class="font-segoe text-center p-5 bg-gradient-primary min-h-screen m-0 text-white">
-    <div class="max-w-lg mx-auto bg-white/95 rounded-2xl px-4 md:px-8 p-8 shadow-[0_10px_30px_rgba(0,0,0,0.3)] text-gray-800">
-        <h1 class="text-gray-800 mb-3 text-3xl font-normal">📋 Registro de Asistencia</h1>
-        <p class="text-gray-600 mb-3 text-sm md:text-lg">Escanea el código QR del participante o escribe el correo electrónico</p>
+<body
+    class="min-h-screen bg-[#0056b3] flex items-center justify-center font-segoe">
+    <div
+        class="w-full max-w-xl mx-auto bg-white/90 rounded-3xl shadow-2xl px-6 py-10 md:px-12 md:py-14 flex flex-col items-center">
+        
+        <h1 class="text-4xl font-bold text-[#0056b3] mb-2">Registro de Asistencia</h1>
+        <p class="text-gray-700 text-base text-center">Escanea el código QR del participante o escribe
+            el correo electrónico</p>
 
         <!-- QR Scanner Section -->
-        <div id="camera-permissions" class="bg-warning-bg text-warning-text p-4 rounded-lg my-5 border border-warning-border hidden">
+        <div id="camera-permissions"
+            class="bg-yellow-100 text-yellow-800 p-4 rounded-lg mb-4 border border-yellow-300 hidden">
             🔒 Por favor, permite el acceso a la cámara para escanear códigos QR
         </div>
-        <div id="camera-status" class="my-4 p-3 font-medium text-base text-blue-500">🔍 Iniciando escáner...</div>
-        <div id="qr-reader" class="w-full max-w-sm mx-auto my-6"></div>
-        <div id="qr-response" class="text-lg my-5 p-4 rounded-lg min-h-[20px]"></div>
+        <div id="camera-status" class="p-3 font-medium text-base text-blue-600">🔍 Iniciando escáner...</div>
+        <div id="qr-reader" class="w-full max-w-sm mx-auto"></div>
 
-        <!-- <div class="my-8 border-t-2 border-gray-200 relative divider-custom"></div> -->
+        <div class="w-full border-t border-gray my-6"></div>
 
         <!-- Manual Input Section -->
-        <input type="email" id="email" placeholder="correo@ejemplo.com" autocomplete="off" 
-               class="p-4 text-base w-full max-w-sm my-4 border-2 border-gray-300 rounded-lg box-border transition-colors duration-300 ease-in-out focus:outline-none focus:border-primary-start" />
-        <br />
-        <button id="submit" onclick="checkIn()" 
-                class="px-8 py-4 text-base my-4 cursor-pointer bg-gradient-button text-white border-none rounded-lg transition-transform duration-200 ease-in-out font-semibold hover:-translate-y-0.5 active:translate-y-0">
+        <input type="email" id="email" placeholder="correo@ejemplo.com" autocomplete="off"
+            class="p-4 text-base w-full max-w-sm mb-4 border-2 border-[#764ba2] rounded-lg transition-colors duration-300 focus:outline-none focus:border-[#667eea] bg-gray-50 text-gray-900" />
+        <button id="submitButton" onclick="checkIn()"
+            class="w-full max-w-sm px-8 py-4 text-base cursor-pointer disabled:bg-gray-300 disabled:cursor-none disabled:transform-none bg-[#0056b3] text-white border-none rounded-lg font-semibold shadow-lg hover:scale-105 transition-transform duration-200">
             📝 Registrar Asistencia
         </button>
+        <div id="manual-response" class="text-lg mb-5 p-4 rounded-lg min-h-[20px]"></div>
+        <div id="qr-response" class="text-lg mb-5 p-4 rounded-lg min-h-[20px]"></div>
 
-        <div id="manual-response" class="text-lg my-5 p-4 rounded-lg min-h-[20px]"></div>
     </div>
 
     <!-- CDN library for GitHub Pages compatibility -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="script.js"></script>
-
 </body>
 
 </html>
