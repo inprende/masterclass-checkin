@@ -3,7 +3,10 @@
 // Emociones Endpoint
 // const endpoint = "https://script.google.com/macros/s/AKfycbx5e5dBSC5I2DPjB04QI4NHx1ovngXHO54Adn2_Iq11gqztoLSqMzyU1-j6RNpRFrDJ/exec";
 // INtraemprendimiento Endpoint
-const endpoint="https://script.google.com/macros/s/AKfycbwoHsIe74C_17h6GqnXcUPt9EiKwwmKZBnpokgOVofiL-U4tPFrxci-uvZ_yEffb9HnzQ/exec"
+// const endpoint="https://script.google.com/macros/s/AKfycbwoHsIe74C_17h6GqnXcUPt9EiKwwmKZBnpokgOVofiL-U4tPFrxci-uvZ_yEffb9HnzQ/exec"
+
+// Mindset Endpoint
+const endpoint = "https://script.google.com/macros/s/AKfycbyItjDQP98VYol9AGhoaRQNCuPFRdlldAIk2zdeo1SFBeWBsmjCjb63pfZGhwTSAt0NYQ/exec";
 
 let html5QrCode;
 let isScanning = false;
@@ -39,7 +42,7 @@ function checkIn() {
         .then(res => res.json())
         .then(data => {
             responseEl.textContent = data.message;
-            
+
             // Set styling based on status
             if (data.status === "success") {
                 responseEl.className = "text-lg my-5 p-4 rounded-lg min-h-[20px] bg-success-bg text-success-text border border-success-border";
@@ -89,7 +92,7 @@ function qrCheckIn(email) {
         .then(res => res.json())
         .then(data => {
             responseEl.textContent = `📱 ${data.message}`;
-            
+
             // Set styling based on status
             if (data.status === "success") {
                 responseEl.className = "text-lg my-5 p-4 rounded-lg min-h-[20px] bg-success-bg text-success-text border border-success-border";
@@ -159,7 +162,7 @@ const qrCodeSuccessCallback = (decodedText, decodedResult) => {
         document.getElementById("manual-response").className = "";
         document.getElementById("qr-response").textContent = "";
         document.getElementById("qr-response").className = "";
-        
+
         document.getElementById("camera-status").textContent = "📷 Listo para escanear - Enfoca el código QR";
         document.getElementById("camera-status").className = "my-4 p-3 font-medium text-base text-green-600";
     }, 12000);
@@ -176,11 +179,11 @@ window.addEventListener('load', () => {
     setTimeout(() => {
         try {
             html5QrCode = new Html5Qrcode("qr-reader");
-            
+
             // Add Tailwind classes to QR reader container
             const qrReaderEl = document.getElementById("qr-reader");
             qrReaderEl.className = "w-full max-w-sm mx-auto";
-            
+
             document.getElementById("camera-status").textContent = "🔍 Iniciando cámara...";
             document.getElementById("camera-status").className = "my-4 p-3 font-medium text-base text-blue-500";
 
@@ -200,7 +203,7 @@ window.addEventListener('load', () => {
                 document.getElementById("camera-status").textContent = "📷 Listo para escanear - Enfoca el código QR";
                 document.getElementById("camera-status").className = "my-4 p-3 font-medium text-base text-green-600";
                 console.log("QR Scanner iniciado con cámara trasera");
-                
+
                 // Style the QR reader video and dashboard elements with Tailwind
                 setTimeout(() => {
                     const video = document.querySelector("#qr-reader video");
@@ -212,7 +215,7 @@ window.addEventListener('load', () => {
                         dashboard.className = "bg-gray-100 rounded-lg p-3 mt-3";
                     }
                 }, 1000);
-                
+
             }).catch(err => {
                 console.warn("No se pudo usar cámara trasera, intentando frontal...", err);
 
