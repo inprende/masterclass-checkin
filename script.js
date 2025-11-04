@@ -6,7 +6,10 @@
 // const endpoint="https://script.google.com/macros/s/AKfycbwoHsIe74C_17h6GqnXcUPt9EiKwwmKZBnpokgOVofiL-U4tPFrxci-uvZ_yEffb9HnzQ/exec"
 
 // Mindset Endpoint
-const endpoint = "https://script.google.com/macros/s/AKfycbyItjDQP98VYol9AGhoaRQNCuPFRdlldAIk2zdeo1SFBeWBsmjCjb63pfZGhwTSAt0NYQ/exec";
+// const endpoint = "https://script.google.com/macros/s/AKfycbyItjDQP98VYol9AGhoaRQNCuPFRdlldAIk2zdeo1SFBeWBsmjCjb63pfZGhwTSAt0NYQ/exec";
+
+// INteligencia
+const endpoint = "https://script.google.com/macros/s/AKfycbzw3zXlQuG9dGQ-di6n_h2C8r28MYfaxT3ytShzQpaldDM2CeskuXuwGuhH3khwMy8a5g/exec"
 
 let html5QrCode;
 let isScanning = false;
