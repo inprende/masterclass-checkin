@@ -11,7 +11,7 @@
 // INteligencia
 // const endpoint = "https://script.google.com/macros/s/AKfycbzw3zXlQuG9dGQ-di6n_h2C8r28MYfaxT3ytShzQpaldDM2CeskuXuwGuhH3khwMy8a5g/exec"
 // Estrategia
-const endpoint = "https://script.google.com/macros/s/AKfycby-X2Ku9j3aoLGcs9YkhhyHS_2TbxkvdMi6jIur0V6XktTv3R-OYEo73BjA_lHsYswh/exec";
+const endpoint = "https://script.google.com/macros/s/AKfycbxNMY0cpV7T-ubDCx58lGZp5YPApcWzEppfZovkDcP7zbB2cYv7i3LpvfCHPOUa95il/exec";
 
 let html5QrCode;
 let isScanning = false;
